@@ -1,0 +1,45 @@
+﻿@{
+    var currency = ViewData["Country"] as string == "GB" ? "£" : "€";
+}
+
+<div class="booking-steps-check__item booking-steps-check__item--flex" v-show="adds.cleaningProducts?.amount">
+    <p>Cleaning products</p><span>@currency <strong>{{adds.cleaningProducts?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex" v-show="adds.hooverMop?.amount">
+    <p>Hoover and a Mop</p><span>@currency <strong>{{adds.hooverMop?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex" v-show="adds.studio?.amount">
+    <p>Studio</p><span>@currency <strong>{{adds.studio?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex booking-steps-check__item--flex_green" v-show="adds.sanitise?.amount">
+    <p>Disinfection</p><span>@currency <strong>{{adds.sanitise?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex booking-steps-check__item--flex_purple" v-show="adds.endOfTenancy?.amount">
+    <p>End of Tenancy cleaning</p><span>@currency <strong>{{adds.endOfTenancy?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex booking-steps-check__item--flex_purple" v-show="adds.laundry?.amount">
+    <p>Laundry</p><span>@currency <strong>{{adds.laundry?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex booking-steps-check__item--flex_orange" v-show="adds.oven?.amount">
+    <p>Oven</p><span>@currency <strong>{{adds.oven?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex booking-steps-check__item--flex_lightred" v-show="adds.ovenGrill?.amount">
+    <p>Oven & Grill</p><span>@currency <strong>{{adds.ovenGrill?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex booking-steps-check__item--priority_package" v-show="adds.priority?.amount">
+    <p>Priority package</p><span>@currency <strong>{{adds.priority?.price}}</strong></span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex dirt-level" v-show="showDirtLevel">
+    <p>Level of dirt</p><span class="color" v-bind:class="dirtLevelClass">{{dirtLevelLabel}}</span>
+</div>
+<div class="booking-steps-check__item booking-steps-check__item--flex">
+    <div class="booking-steps-check__item--flex">
+        <span>Estimated duration</span>
+        <div class="booking-steps-check__icon">
+            <span>i</span>
+            <div class="booking-steps-check__tooltip">
+                <p>Based on your selection our system estimates the time it would take for our eMoppers to clean your home and usually, we are able complete your cleaning job within the estimated time however we may need an additional hour if the property is more dirty or larger than estimated.</p>
+            </div>
+        </div>
+    </div><span><strong>{{cleanTimeString}}</strong></span>
+</div>

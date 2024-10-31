@@ -1,0 +1,17 @@
+﻿<p v-show="errorCode==1">
+    Some of your details have been flagged as high risk fraud by our payment provider's system. Please amend your details.
+</p>
+<p v-show="errorCode==2">
+    Your bank declined the transaction and your card could  not be charged at this time. Please provide a different payment method.
+</p>
+<p v-show="errorCode==3">
+    Unfortunately, we can't connect to your bank to check your card balance. Please close current message and press 'Next' one more time.
+</p>
+<p v-show="errorCode==11">
+    It seems that you are one of our existing clients. Kindly <a href="#" class="error-sign-in"><b>Sign in</b></a> here, or use the Sign in link on the top of the current page.
+</p>
+<p v-show="errorCode==9198">
+    Please choose at least 1 room or additional service to proceed
+</p>
+<p v-show="!errorCode && errorMessage" v-html="errorMessage">
+</p>

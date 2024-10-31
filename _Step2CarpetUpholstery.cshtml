@@ -1,0 +1,20 @@
+@{
+    if((ViewData["city"] as string) != "St Albans"){
+        <div class="carpet-upholstery-steps" v-show="availableServices.carpet || availableServices.carpetDelicate">
+            <div class="booking-step__choose-item booking-steps__choose-carpet-upholstery">
+                <div class="booking-step__radios">
+                    <label class="wow fadeIn">
+                        <input v-model="switchers.carpet" type="radio" name="carpetAdditionalCleaning" v-bind:value="false"><span>No</span>
+                    </label>
+                    <label class="wow fadeIn">
+                        <input v-model="switchers.carpet" type="radio" name="carpetAdditionalCleaning" v-bind:value="true"><span>Yes</span>
+                    </label>
+                </div>
+                <p class="booking-step__choose-name wow fadeIn">Do you need Carpet/Upholstery cleaning?</p>
+            </div>
+
+            @Html.Partial("~/Views/CarpetUpholstery/_CarpetStep2Content.cshtml", new ViewDataDictionary{{"mixed", true}, {"startStepNumber", 5}, {"currency", ViewData["currency"] } })
+            @Html.Partial("~/Views/CarpetUpholstery/_UpholsteryStep2Content.cshtml", new ViewDataDictionary{{"mixed", true}, { "optional", true }, {"startStepNumber", 4} })
+        </div>
+    }
+}

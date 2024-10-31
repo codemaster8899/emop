@@ -1,0 +1,12 @@
+﻿@{
+    var currency = ViewData["Country"] as string == "GB" ? "£" : "€";
+}
+
+<div class="booking-steps-check__item booking-steps-check__item--flex">
+    <a class="booking-steps-check__link" href="#" v-bind:style="[discount ? {zIndex: -1, color: 'transparent'} : {}]">Have a Promocode/Voucher?</a>
+    <div class="booking-steps-check__promo">
+        <input type="text" name="promocode" placeholder="Apply code/voucher" v-model="promoWord">
+        <button type="button" v-on:click="applyPromo"><span>APPLY</span></button>
+    </div>
+    <div class="booking-steps-check__discount" v-bind:class="{ 'booking-steps-check__discount--active': discount }"><span class="color dirty-light">Discount</span><span class="color dirty-light">@currency {{discount}}</span></div>
+</div>

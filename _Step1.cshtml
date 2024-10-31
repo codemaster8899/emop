@@ -1,0 +1,142 @@
+﻿@{
+    var postcode = System.Web.HttpUtility.ParseQueryString(Request.Url.Query)["postcode"];
+    var eot = System.Web.HttpUtility.ParseQueryString(Request.Url.Query)["eot"];
+    var country = ViewData["Country"] as string;
+    var currency = country == "GB" ? "£" : "€";
+    var termsConditions = country == "GB" ? "https://www.emop.co.uk/help/subscription-cashback-terms-conditions/" : "https://www.emop.ie/help/subscription-cashback-terms-conditions/";
+}
+<div class="booking-step booking-step--one booking-step--active">
+    <div class="booking-step__block booking-step__block--padding wow fadeIn">
+        <div class="booking-step__number"><span>1</span></div>
+        <div class="booking-step__header">
+            <p class="booking-step__name booking-step__name--md">How often are we cleaning?</p><span class="booking-step__text">You can always reschedule or save cleanings for later</span>
+        </div>
+        <div class="booking-step__cards">
+            <label v-for="(subscr, index) in subscriptions" class="booking-step__card wow fadeIn" v-bind:class="{ 'booking-step__card--active': (subscr.name !== 'One – Off' ? subscr.name : 'Once') === subscription }" :data-wow-delay="'0.' + (2 + index) + 's'" v-show="showCards">
+                <input class="js-get-often" type="radio" name="often" :value="subscr.name !== 'One – Off' ? subscr.name : 'Once'" v-model="subscription">
+                <div v-if="subscr.mark" class="booking-step__card-icon"><img src="/static/images/icon_popular.svg" alt="popular" loading="lazy"></div>
+                <div class="booking-step__card-header">
+                    <div class="booking-step__card-left">
+                        <h3 class="booking-step__card-name">{{subscr.name}}</h3>
+                        <span v-if="subscr.saleText" class="booking-step__card-offer">{{subscr.saleText}}</span>
+                    </div>
+                    <p class="booking-step__card-price">
+                        {{subscr.name === 'One – Off' ? 'from ' : ''}}@currency{{subscr.subscriptions[0]?.price}}/h
+                    </p>
+                </div>
+
+                <ul v-if="subscr.name !== 'One – Off'" class="booking-step__card-list">
+                    <li v-for="desc in subscr.description" class="booking-step__card-item">
+                        {{desc}}
+                    </li>
+                </ul>
+                <ul v-if="subscr.name === 'One – Off'" class="booking-step__card-list">
+                    <li v-for="rate in subscr.rates.filter(x=>x.price)" :key="rate.description" class="booking-step__card-item booking-step__card-item-nodisk">
+                        <div class="booking-step__card-item-left__block">
+                            <span>{{rate.period}}</span>
+                            <span>{{rate.description}}</span>
+                        </div>
+                        <div class="booking-step__card-item-right__block">
+                            <span>@currency{{rate.price}}/h</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <span v-if="subscr.subscriptions[2]?.cashback" class="booking-step__button-cashback booking-step__button-cashback--sec">
+                    <span>Cashback up to @currency{{subscr.subscriptions[2]?.cashback}}</span>
+                </span>
+            </label>
+        </div>
+        <div class="booking-step__choose-item  booking-step__choose-item_tenancy" v-bind:class="{ show: !isSubscription }">
+            <div class="booking-step__radios">
+                <label class="wow fadeIn">
+                    <input type="radio" name="needtenancy" value="no" checked v-model="endOfTenancy"><span>No</span>
+                </label>
+                <label class="wow fadeIn">
+                    <input type="radio" name="needtenancy" value="yes" v-model="endOfTenancy"><span>Yes</span>
+                </label>
+            </div>
+            <p class="booking-step__choose-name booking-step__choose-name--strong wow fadeIn">
+                Do you need End of Tenancy cleaning?
+                <br />
+                <span class="thin">Please check our Check-list</span>
+                <span> <a href="https://www.emop.co.uk/help/end-of-tenancy/" target="_blank">here</a> <br />( Additional @currency{{endOfTenancyPrice}} )</span>
+            </p>
+        </div>
+        <div class="subscribe-container" v-if="subscription != 'Once'">
+            <div class="booking-step__header">
+                <p class="booking-step__name booking-step__name--sm">How long do you want to subscribe with us?</p>
+            </div>
+            <div class="booking-step__buttons">
+                <label class="booking-step__button">
+                    <input type="radio" name="type" value="3" v-model="month" />
+                    <span class="booking-step__button-content">3 months</span>
+                    <span class="booking-step__button-cashback">Cashback @currency{{cashback[0]}}</span>
+                </label>
+                <label class="booking-step__button booking-step__button--active">
+                    <input type="radio" name="type" value="6" v-model="month" />
+                    <span class="booking-step__button-content">6 months</span>
+                    <span class="booking-step__button-cashback booking-step__button-cashback--sec">Cashback @currency{{cashback[1]}}</span>
+                </label>
+                <label class="booking-step__button">
+                    <input type="radio" name="type" value="9" v-model="month" />
+                    <span class="booking-step__button-content">9 months</span>
+                    <span class="booking-step__button-cashback booking-step__button-cashback--third">Cashback @currency{{cashback[2]}}</span>
+                </label>
+            </div>
+            <div class="booking-step__ps">
+                *Сashback terms & conditions available <a href="@termsConditions" target="_blank">here</a>
+            </div>
+        </div>
+        <div class="booking-step__choose-item  booking-step__choose-item_studio show">
+            <div class="booking-step__radios">
+                <label class="wow fadeIn">
+                    <input type="radio" name="propertyStudio" value="no" checked v-model="studio"><span>No</span>
+                </label>
+                <label class="wow fadeIn">
+                    <input type="radio" name="propertyStudio" value="yes" v-model="studio"><span>Yes</span>
+                </label>
+            </div>
+            <p class="booking-step__choose-name booking-step__choose-name--strong wow fadeIn">
+                Is the property a <span>Studio?</span>
+                <br />
+                <span class="thin">Usually {{studioTime}} hour cleaning service with Cleaning products included</span>
+        </div>
+        <div class="booking-step__error wow fadeIn" v-show="zones != null && zones.length > 0">
+            <p class="booking-step__error-text">A small surcharge is automatically reflected in the price in order to compensate cleaners with travel  costs if you live in any of the following zones.</p>
+            <table class="booking-step__table">
+                <tr class="booking-step__table_tr" v-for="zone in zones">
+                    <td class="booking-step__table_td">{{zone.name}}</td>
+                    <td class="booking-step__table_td">+ @currency{{zone.pricePerHourNextDay}} per hour</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="booking-step__block booking-step__block--date booking-step__block--last wow fadeIn">
+        <div class="booking-step__number"><span>2</span></div>
+        <div class="booking-step__row">
+            <div class="booking-step__date wow fadeIn">
+                <div class="booking-step__header">
+                    <p class="booking-step__name booking-step__name--md">Choose date</p>
+                </div>
+                <div class="booking-step__datepicker"></div>
+                <input type="hidden" class="booking-step__datepicker-value" />
+            </div>
+            <div class="booking-step__time wow fadeIn">
+                <div class="booking-step__header">
+                    <p class="booking-step__name booking-step__name--md">Choose start time</p>
+                </div>
+                <input class="booking-step__timepicker" type="text" name="timepicker"><span class="booking-step__time-text">Time is in 24 h format</span>
+                <!--p.booking-step__time-link Your booking will be available in <a href="#">My Account</a> and in eMop App-->
+            </div>
+        </div>
+    </div>
+    @*<div class="booking-step__error wow fadeIn">
+            <p class="booking-step__error-text">The booking can be automatically cancelled 3 hours before the start time if the job is not accepted by a cleaner.</p>
+        </div>*@
+    <div class="booking-step-buttons ">
+        <a href="/checkout.html?postcode=@postcode&eot=@eot" class="booking-step-button booking-step-button--grey booking-step-button--xs js-goTo-prestep" type="button" style="visibility: visible; animation-name: fadeIn;"><span class="booking-step-button__text">back</span></a>
+        <button class="booking-step-button booking-step-button--first wow fadeIn" type="button" v-bind:class="{'booking-step-button--disabled': handlingStep1}" v-on:click="toStep2"><span class="booking-step-button__text">Get a Quote</span></button>
+    </div>
+
+</div>

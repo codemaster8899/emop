@@ -1,0 +1,132 @@
+﻿@{
+    var currency = ViewData["Country"] as string == "GB" ? "£" : "€";
+    var termsConditions = ViewData["Country"] as string == "GB" ? "https://www.emop.co.uk/help/priority-package-terms-conditions/" : "https://www.emop.ie/help/priority-package-terms-conditions/";
+}
+
+<div class="booking-step booking-step--three">
+    <div class="booking-step__block booking-step__block--padding wow fadeIn">
+        <div class="booking-step__number"><span>1</span></div>
+        <div class="booking-step__header">
+            <p class="booking-step__name booking-step__name--md">Contact details</p><span class="booking-step__text" v-if="!userId">Existing client? Please <a href="#" v-if="!userId" v-bind:href="signInUrl" class="booking-step__header-link">Sign in</a></span>
+        </div>
+        <div class="booking-step__content">
+            <div class="booking-step__error wow fadeIn" data-wow-delay="0.2s">
+                <p class="booking-step__error-text">This is necessary for you to be able to manage your booking after it is placed.</p>
+            </div>
+            <div class="booking-step__flex">
+                <label class="booking-step__label wow fadeIn" data-wow-delay="0.3s">
+                    <span>Email</span>
+                    <input id="email" type="email" name="email" v-model="email" :disabled="userId">
+                </label>
+                <label class="booking-step__label wow fadeIn" data-wow-delay="0.3s" v-show="!userId">
+                    <span>Create password</span>
+                    <input type="password" name="password" id="password" v-model="password" :disabled="userId">
+                    <div class="booking-step__label-password close-eye open-eye js-show-pass" toggle="#password"></div>
+                </label>
+                <label class="booking-step__label wow fadeIn" data-wow-delay="0.4s">
+                    <label class="booking-step__label wow fadeIn"
+                           data-wow-delay="0.4s">
+                        <span>Phone number</span>
+                        <div class="booking-step__label-phonecode">
+                            {{phoneCode}}
+                        </div>
+                        <input type="text" id="phone" name="phone" maxlength="13" v-model="phone" :disabled="userId">
+                    </label>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="booking-step__block booking-step__block--padding wow fadeIn">
+        <div class="booking-step__number"><span>2</span></div>
+        <div class="booking-step__header">
+            <p class="booking-step__name booking-step__name--md">Additional info</p>
+        </div>
+        <div class="booking-step__content booking-step__content--flex">
+            <label class="booking-step__label wow fadeIn" data-wow-delay="0.2s">
+                <span>Name</span>
+                <input type="text" name="name" v-model="name">
+            </label>
+            <label class="booking-step__label wow fadeIn" data-wow-delay="0.3s">
+                <span>Surname</span>
+                <input type="text" name="surname" v-model="surname">
+            </label>
+            <label class="booking-step__label booking-step__label--full booking-step__label--address wow fadeIn address" data-wow-delay="0.4s">
+                <span>Address</span>
+                <select class="js-select-address" name="address" v-model="address">
+                    <option v-for="optionAddress in addresses">{{optionAddress}}</option>
+                </select>
+            </label>
+        </div>
+        <div class="booking-step__error wow fadeIn">
+            <p class="booking-step__error-text">If you didn’t find your address in the list, please provide it in comments below</p>
+        </div>
+        <div class="booking-step__content">
+            <label class="booking-step__label wow fadeIn comments">
+                <span>Comments</span>
+                <textarea name="comments" placeholder="Text" maxlength="500" v-model="comments"></textarea>
+                <div class="counter">
+                    <p class="currentLength">0</p>
+                    <p>/</p>
+                    <p class="maxlenght">500</p>
+                </div>
+            </label>
+        </div>
+    </div>
+    <div class="booking-step__block booking-step__block--padding wow fadeIn priority-package">
+        <div class="booking-step__number"><span>!</span></div>
+        <div class="booking-step__header">
+            <p class="priority-package__title">
+                Happiness upgraded with our
+                <strong>Priority package</strong>
+            </p>
+        </div>
+        <div class="priority-package__content">
+            <ul class="priority-package__list priority-package-list">
+                <li>☉ Highly Acclaimed Cleaner Guaranteed</li>
+                <li>☉ Free Emergency Cancellation/Rescheduling</li>
+                <li>☉ Booking Confirmation Guarantee -" No lost order"</li>
+                <li>☉ Peace of mind insurance</li>
+                <li>☉ Personal customer support</li>
+            </ul>
+            <div class="priority-package__price">
+                <p class="priority-package__price-label">
+                    Only for
+                </p>
+                <p class="priority-package__price-text">
+                    @currency{{priorityPrice}}
+                </p>
+            </div>
+        </div>
+        <div class="priority-package__footer">
+            <div class="priority-package__btns">
+                <label>
+                    <input type="radio" name="priorityPackage" value="Sounds great"
+                           class="priority-package__radio" v-model="priority">
+                    <span class="priority-package__btn">Sounds great</span>
+                </label>
+                <label>
+                    <input type="radio" name="priorityPackage" value="Not for me"
+                           class="priority-package__radio" v-model="priority">
+                    <span class="priority-package__btn">Not for me</span>
+                </label>
+            </div>
+            <a class="priority-package__terms" href="@termsConditions" target="_blank">Priority package Terms&Conditions.</a>
+        </div>
+    </div>
+
+    <div class="booking-step-buttons" v-show="!cardPreStepVisible">
+        <button class="booking-step-button booking-step-button--grey js-goTo-step2 wow fadeIn" type="button"><span class="booking-step-button__text" v-on:click="showQuestions">back</span></button>
+        <button class="booking-step-button wow fadeIn" type="button" v-on:click="processPaymentData()"><span class="booking-step-button__text">Next</span></button>
+    </div>
+
+    @Html.Partial("Checkout/_Step3Payment")
+
+    <div class="booking-step-buttons" v-show="cardPreStepVisible">
+        <button class="booking-step-button booking-step-button--grey js-goTo-step2 wow fadeIn" type="button">
+            <span class="booking-step-button__text" v-on:click="showQuestions">back</span>
+        </button>
+        <button class="booking-step-button wow fadeIn" type="button" v-bind:class="{'booking-step-button--disabled': handlingStep3}" v-on:click="goToFinal">
+            <span class="booking-step-button__text">Book your cleaning</span>
+        </button>
+    </div>
+</div>

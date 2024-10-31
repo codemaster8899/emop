@@ -1,0 +1,49 @@
+﻿@using eMop.Models.CheckoutModels
+@{
+    var model = (CheckoutModel)Model;
+}
+<h2 class="booking-steps-faq__title">Questions?</h2>
+<div class="booking-steps-faq__items">
+    @{ var isFirst = true;}
+    @foreach (var question in model.AddressPayment)
+    {
+        <div class="booking-steps-faq__item booking-steps-faq__item-address-payment @Html.Raw(isFirst ? "booking-steps-faq__item--active" : "")" style="display: none">
+            <div class="booking-steps-faq__header">
+                <div class="booking-steps-faq__icon"></div>
+                <p class="booking-steps-faq__question">@Html.Raw(@question.Question)</p>
+            </div>
+            <div class="booking-steps-faq__content">
+                <p class="booking-steps-faq__answer">@Html.Raw(question.Answer)</p>
+            </div>
+        </div>
+        isFirst = false;
+    }
+    @{ isFirst = true;}
+    @foreach (var question in model.WhatToClean)
+    {
+        <div class="booking-steps-faq__item booking-steps-faq__item-what-to-clean @Html.Raw(isFirst ? "booking-steps-faq__item--active" : "")" style="display: none">
+            <div class="booking-steps-faq__header">
+                <div class="booking-steps-faq__icon"></div>
+                <p class="booking-steps-faq__question">@Html.Raw(@question.Question)</p>
+            </div>
+            <div class="booking-steps-faq__content">
+                <p class="booking-steps-faq__answer">@Html.Raw(question.Answer)</p>
+            </div>
+        </div>
+        isFirst = false;
+    }
+    @{ isFirst = true;}
+    @foreach (var question in model.WhenToClean)
+    {
+        <div class="booking-steps-faq__item booking-steps-faq__item-when-to-clean @Html.Raw(isFirst ? "booking-steps-faq__item--active" : "")">
+            <div class="booking-steps-faq__header">
+                <div class="booking-steps-faq__icon"></div>
+                <p class="booking-steps-faq__question">@Html.Raw(@question.Question)</p>
+            </div>
+            <div class="booking-steps-faq__content">
+                <p class="booking-steps-faq__answer">@Html.Raw(question.Answer)</p>
+            </div>
+        </div>
+        isFirst = false;
+    }
+</div>

@@ -1,0 +1,168 @@
+﻿@using eMop.Common.Enums
+@using eMop.Services
+
+@{
+    var currency = ViewData["Country"] as string == "GB" ? "£" : "€";
+}
+
+<div class="booking-steps-check__item booking-steps-check__rooms" v-show="hasRooms">
+    <!-- REGULAR ITEMS =================================================== -->
+    @foreach (var pair in new Dictionary<string, string>
+{
+        {"bedrooms", "Bedroom"},
+        {"livings","Living/Dining room"},
+        {"bathrooms","Bathroom"},
+        {"halls","Hall"},
+        {"stairs","Staircase"},
+        {"toilets","Toilet"},
+        {"kitchens","Kitchen"},
+        {"offices","Office"},
+        {"conservatory","Conservatory"},
+        {"garage", "Garage"},
+
+        {"windows","Windows"},
+        {"microwave","Microwave (inside)"},
+        {"bookcase","Bookcase"},
+        {"kitchenInside","Kitchen (inside)"},
+        {"bedMaking","Bedmaking"},
+        {"fridge","Fridge (inside)"},
+        {"oven","Oven"},
+        {"ovenGrill","Oven & Grill"},
+        {"ironing","Ironing"},
+        {"outdoorCleaning","Outdoor cleaning"},
+        {"chores","Chores"},
+    })
+    {
+        <div class="booking-steps-check__room" v-if="adds['@pair.Key']?.amount">
+            <span>@pair.Value</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeAddsItem('@pair.Key', -1)"></button>
+                <input type="text" value="0" readonly v-model="adds['@pair.Key'].amount">
+                <button class="plus" type="button" v-on:click="changeAddsItem('@pair.Key', 1)"></button>
+            </div>
+            <p class="booking-steps-check__time">{{adds['@pair.Key'].timePerAdd}} min</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="reset('@pair.Key')"></button>
+        </div>
+    }
+</div>
+
+<!-- CARPET ITEMS =================================================== -->
+<div class="booking-steps-check__item booking-steps-check__rooms" v-if="hasCarpetServiceItems || hasCarpetDelicateServiceItems">
+    <h3>Carpet cleaning</h3>
+    @foreach (var room in CarpetUpholsteryService.RoomsDescr)
+    {
+        <div v-if="services.carpet['@room.Item1']?.amount" class="booking-steps-check__room">
+            <span>@room.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('carpet', '@room.Item1', -1)"></button>
+                <input type="text" value="0" readonly="true" v-model="services.carpet['@room.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('carpet', '@room.Item1', 1)"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.carpet['@room.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('carpet', '@room.Item1', 0)"></button>
+        </div>
+        <div v-if="services.carpetDelicate['@room.Item1']?.amount" class="booking-steps-check__room">
+            <span>@room.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('carpetDelicate', '@room.Item1', -1)"></button>
+                <input type="text" value="0" readonly="true" v-model="services.carpetDelicate['@room.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('carpetDelicate', '@room.Item1', 1)"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.carpetDelicate['@room.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('carpetDelicate', '@room.Item1', 0)"></button>
+        </div>
+    }
+
+    @foreach (var rug in CarpetUpholsteryService.RugsDescr)
+    {
+        <div v-if="services.carpet['@rug.Item1']?.amount" class="booking-steps-check__room">
+            <span>@rug.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('carpet', '@rug.Item1', -1)"></button>
+                <input type="text" value="0" readonly="true" v-model="services.carpet['@rug.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('carpet', '@rug.Item1', 1)"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.carpet['@rug.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('carpet', '@rug.Item1', 0)"></button>
+        </div>
+        <div v-if="services.carpetDelicate['@rug.Item1']?.amount" class="booking-steps-check__room">
+            <span>@rug.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('carpetDelicate', '@rug.Item1', -1)"></button>
+                <input type="text" value="0" readonly="true" v-model="services.carpetDelicate['@rug.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('carpetDelicate', '@rug.Item1', 1)"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.carpetDelicate['@rug.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('carpetDelicate', '@rug.Item1', 0)"></button>
+        </div>
+    }
+
+    <div v-if="services.carpet.staircase?.amount" class="booking-steps-check__room">
+        <span>Staircases</span>
+        <div class="booking-steps-check__row booking-step__box-row">
+            <button class="minus" type="button" v-on:click="changeServicesItem('carpet', 'staircase', -1)"></button>
+            <input type="text" value="0" readonly="true" v-model="services.carpet.staircase.amount">
+            <button class="plus" type="button" v-on:click="changeServicesItem('carpet', 'staircase', 1)"></button>
+        </div>
+        <p class="booking-steps-check__price">@currency{{services.carpet.staircase.price}}</p>
+        <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('carpet', 'staircase', 0)"></button>
+    </div>
+    <div v-if="services.carpetDelicate.staircase?.amount" class="booking-steps-check__room">
+        <span>Staircases</span>
+        <div class="booking-steps-check__row booking-step__box-row">
+            <button class="minus" type="button" v-on:click="changeServicesItem('carpetDelicate', 'staircase', -1)"></button>
+            <input type="text" value="0" readonly="true" v-model="services.carpetDelicate.staircase.amount">
+            <button class="plus" type="button" v-on:click="changeServicesItem('carpetDelicate', 'staircase', 1)"></button>
+        </div>
+        <p class="booking-steps-check__price">@currency{{services.carpetDelicate.staircase.price}}</p>
+        <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('carpetDelicate', 'staircase', 0)"></button>
+    </div>
+</div>
+
+<!-- UPHOLSTERY ITEMS =================================================== -->
+<div class="booking-steps-check__item booking-steps-check__rooms" v-if="hasUpholsteryStandardServiceItems || hasUpholsteryLeatherServiceItems || hasUpholsteryDelicateServiceItems">
+    <h3 v-if="hasUpholsteryStandardServiceItems">Upholstery cleaning - Standard</h3>
+    @foreach (var room in CarpetUpholsteryService.UpholsteryDescr)
+    {
+        <div v-if="services.upholstery['@room.Item1']?.amount" class="booking-steps-check__room">
+            <span>@room.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('upholstery', '@room.Item1', -1, 'standard')"></button>
+                <input type="text" value="0" readonly="true" v-model="services.upholstery['@room.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('upholstery', '@room.Item1', 1, 'standard')"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.upholstery['@room.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('upholstery', '@room.Item1', 0, 'standard')"></button>
+        </div>
+    }
+
+    <h3 v-if="hasUpholsteryDelicateServiceItems">Upholstery cleaning - Delicate</h3>
+    @foreach (var room in CarpetUpholsteryService.UpholsteryDelicateDescr)
+    {
+        <div v-if="services.upholstery['@room.Item1']?.amount" class="booking-steps-check__room">
+            <span>@room.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('upholstery', '@room.Item1', -1, 'delicate')"></button>
+                <input type="text" value="0" readonly="true" v-model="services.upholstery['@room.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('upholstery', '@room.Item1', 1, 'delicate')"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.upholstery['@room.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('upholstery', '@room.Item1', 0, 'delicate')"></button>
+        </div>
+    }
+
+    <h3 v-if="hasUpholsteryLeatherServiceItems">Upholstery cleaning - Leather</h3>
+    @foreach (var room in CarpetUpholsteryService.UpholsteryLeatherDescr)
+    {
+        <div v-if="services.upholstery['@room.Item1']?.amount" class="booking-steps-check__room">
+            <span>@room.Item2</span>
+            <div class="booking-steps-check__row booking-step__box-row">
+                <button class="minus" type="button" v-on:click="changeServicesItem('upholstery', '@room.Item1', -1, 'leather')"></button>
+                <input type="text" value="0" readonly="true" v-model="services.upholstery['@room.Item1'].amount">
+                <button class="plus" type="button" v-on:click="changeServicesItem('upholstery', '@room.Item1', 1, 'leather')"></button>
+            </div>
+            <p class="booking-steps-check__price">@currency{{services.upholstery['@room.Item1'].price}}</p>
+            <button class="booking-steps-check__remove" type="button" v-on:click="resetServiceItem('upholstery', '@room.Item1', 0, 'leather')"></button>
+        </div>
+    }
+</div>

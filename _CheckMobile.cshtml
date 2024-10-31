@@ -1,0 +1,50 @@
+﻿@{
+    var currency = ViewData["Country"] as string == "GB" ? "£" : "€";
+}
+
+
+<div class="booking-steps-check booking-steps-check--mobile">
+    <div class="booking-steps-check--mob-content">
+        <div class="booking-steps-check__row">
+            <div class="booking-steps-check__shopping js-dropdown-check">
+                @*<img src="/static/images/shopping-cart.svg">
+                    <p class="booking-steps-check__shopping-counter js-shoping-card-counter">{{cartNumber}}</p>*@
+            </div>
+        </div>
+        <div class="booking-steps-check__content">
+            <div class="booking-steps-check__item">
+                <h2>Booking Summary</h2><span><strong>{{tariff}} </strong>{{caption}}</span>
+                <p class="flex justify-content-between booking-steps-check-rates"><span>Rate</span><label><span>@currency<strong>{{pricePerHour1}}/</strong>h </span><span v-show="cleanTime2 > 0">@currency<strong>{{pricePerHour2}}/</strong>h</span></label></p>
+            </div>
+            <div class="booking-steps-check__item">
+                <p class="booking-steps-check__date">{{cleanDate}}</p><span class="booking-steps-check__date"> {{cleanDay}}</span>
+            </div>
+            @Html.Partial("_CheckPromo")
+            @Html.Partial("_CheckRooms")
+            @Html.Partial("_CheckProps")
+            <div class="booking-steps-check__item">
+                <div class="booking-steps-check__item--flex">
+                    <div>
+                        <h3>Estimated Amount</h3>
+                        <div class="booking-steps-check__icon">
+                            <span>i</span>
+                            <div class="booking-steps-check__tooltip">
+                                <p>
+                                    As we charge customers by Pay as You Go approach, you will pay only for the real time a cleaner worked at your
+                                    property. If the cleaning job is completed faster than it was estimated, you will pay less. In case your cleaning
+                                    job took longer time, you will pay a little bit more but never more than 1 hour extra.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="strong" data-currency="@currency" data-country="@ViewData["Country"]">@currency{{ servicePrice }}</span>
+                </div>
+                <div v-if="minPrice && minPrice > servicePrice" class="booking-steps-check__item--flex booking-steps-check__item--blue">
+                    <span>Min time price</span>
+                    <span>@currency {{ minPrice }}</span>
+                </div>
+            </div>
+            <div class="booking-steps-check__close js-close-check">&times</div>
+        </div>
+    </div>
+</div>

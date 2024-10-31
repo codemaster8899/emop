@@ -1,0 +1,29 @@
+<div v-show="cardPreStepVisible" class="booking-step__block booking-step__block--last booking-step__block--padding js-stripe-step wow fadeIn">
+    <div class="booking-step__number"><span>3</span></div>
+    <div class="booking-step__header"> 
+        <p class="booking-step__name booking-step__name--md">Please enter your payment details</p>
+    </div>
+
+    <div class="booking-step__content">
+        <div class="booking-step__card-block booking-step__card-block--payment" style="border: none;">
+            <form id="payment-form">
+                <div id="payment-element">
+                    <!-- Elements will create form elements here -->
+                </div>
+                <div id="stripe-error-message">
+                    <!-- Display error message to your customers here -->
+                </div>
+            </form>
+        </div>
+        <div class="booking-step__card-block booking-step__card-block--small js-radio-click wow fadeIn" data-wow-delay="0.2s">
+            <input type="checkbox" name="privacy" id="privacy_checkbox">
+            <div class="booking-step__card-block--checkbox"></div>
+            <p>eMop require personal data to process your booking. For more information please see our <a href="https://www.emop.co.uk/help/emop-privacy-policy/" target="_blank">Privacy Policy</a>. By ticking this box you accept our <a href="https://www.emop.co.uk/help/emop-booking/" target="_blank">Booking Terms&Conditions</a> and <a href="https://www.emop.co.uk/help/emop-cancellation/" target="_blank">Cancellation Policy</a></p>
+        </div>
+        <div class="booking-step__card-block booking-step__card-block--small js-radio-click wow fadeIn" data-wow-delay="0.3s">
+            <input type="checkbox" name="privacy" id="info_checkbox">
+            <div class="booking-step__card-block--checkbox"></div>
+            <p>In accordance with the Strong Customer Authentication Regulation (SCA), I authorise you, eMop, to send instructions to the financial institution that issue my card to take payments from my card in accordance with the <a href="https://www.emop.co.uk/help/term-conditions/" target="_blank">terms of my agreement</a> with you</p>
+        </div>
+    </div>
+</div>

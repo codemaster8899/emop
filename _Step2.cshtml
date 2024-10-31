@@ -1,0 +1,361 @@
+﻿@using eMop.Common.Enums
+
+@{
+    var currency = ViewData["Country"] as string == "GB" ? "£" : "€";
+}
+
+<div class="booking-step booking-step--two">
+    <div class="booking-step__block booking-step__block--padding wow fadeIn" v-if="!adds.studio.amount">
+        <div class="booking-step__number"><span>1</span></div>
+        <div class="booking-step__header">
+            <p class="booking-step__name booking-step__name--xs">Please choose the rooms to clean to get an estimated price</p>
+        </div>
+        <div class="booking-step__content">
+            <div class="booking-step__rooms booking-step__boxes">
+                <!-- ROOMS ========================================================== -->
+                <div class="booking-step__box wow fadeIn" v-for="(room, index) in roomsItems" :data-wow-delay="((2 + index) / 10) + 's'">
+                    <input class="booking-step__box-checkbox"
+                           type="checkbox"
+                           :id="room.id + '_item'"
+                           :name="room"
+                           :checked="adds[room.id].amount" />
+                    <div class="booking-step__box-label">
+                        <label :for="room.id + '_item'"></label>
+                        <div class="booking-step__box-image"><img :src="room.icon" :alt="room.label + ' icon'" /></div>
+                        <div class="booking-step__box-title">
+                            <span>{{ room.label }}</span><span class="about_times">&ap;{{ adds[room.id].timePerAdd }}min</span>
+                        </div>
+                        <div class="booking-step__box-row">
+                            <button class="minus-btn" type="button" @@click="changeAddsItem(room.id, -1)"></button>
+                            <input readonly type="text" value="0" v-model="adds[room.id].amount" />
+                            <button class="plus-btn" type="button" @@click="changeAddsItem(room.id, 1)"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="booking-step__block booking-step__block--padding wow fadeIn" v-bind:class="{'hide-dirt-level-number': isSubscription}">
+        <div class="booking-step__number">
+            <span>{{ studio ? '1' : '2' }}</span>
+        </div>
+        <div class="booking-step__header">
+            <p class="booking-step__name booking-step__name--md">Let us know if you need any additional services</p>
+        </div>
+        <div class="booking-step__content">
+            <div class="booking-step__boxes">
+                <!-- ADDITIONAL SERVICES ============================================= -->
+                <div class="booking-step__box wow fadeIn"
+                     v-for="(service, index) in servicesItems"
+                     :data-wow-delay="((2 + index) / 10) + 's'">
+                    <input class="booking-step__box-checkbox"
+                           type="checkbox"
+                           :id="service.id + '_item'"
+                           :name="service"
+                           :checked="adds[service.id].amount" />
+                    <div class="booking-step__box-info info-hidden" v-if="service.info">
+                        <img src="/static/images/info-icon.svg" alt="info" loading="lazy"/>
+                        <div class="info-hidden__text">
+                            <p v-text="service.info"></p>
+                        </div>
+                    </div>
+                    <div class="booking-step__box-label">
+                        <label :for="service.id + '_item'"></label>
+                        <div class="booking-step__box-image"><img :src="service.icon" :alt="service.label + ' icon'" /></div>
+                        <div class="booking-step__box-title">
+                            <span v-html="service.label"></span>
+                            <span class="about_times" v-if="adds[service.id].timePerAdd">&ap;{{ adds[service.id].timePerAdd }}min</span>
+                            <span class="about_times about_times--highlight" v-if="adds[service.id].pricePerAdd">
+                                (Additional @currency{{ adds[service.id].pricePerAdd }})
+                            </span>
+                        </div>
+                        <div class="booking-step__box-row" v-if="!adds[service.id].maxValue">
+                            <button class="minus-btn" type="button" @@click="changeAddsItem(service.id, -1)"></button>
+                            <input readonly type="text" value="0" v-model="adds[service.id].amount" />
+                            <button class="plus-btn" type="button" @@click="changeAddsItem(service.id, 1)"></button>
+                        </div>
+                        <div class="booking-step__box-row" v-if="adds[service.id].maxValue === 1">
+                            <div class="booking-step__radios">
+                                <label class="wow fadeIn">
+                                    <input type="radio"
+                                           :name="service.id"
+                                           :value="0"
+                                           @@click="changeAddsItem(service.id, 0)"
+                                           v-model="adds[service.id].amount" /><span>No</span>
+                                </label>
+                                <label class="wow fadeIn">
+                                    <input type="radio"
+                                           :name="service.id"
+                                           :value="1"
+                                           :checked="adds[service.id].amount"
+                                           @@click="changeAddsItem(service.id, 1)"
+                                           v-model="adds[service.id].amount" /><span>Yes</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="booking-step__choose">
+                <div class="booking-step__choose-item booking-step__choose-item__with__eco" v-if="!adds.studio.amount">
+                    <div class="booking-step__radios">
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="cleaningProducts"
+                                   :value="0"
+                                   @@click="changeAddsItem('cleaningProducts', 0)"
+                                   v-model="adds.cleaningProducts.amount" /><span>No</span>
+                        </label>
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="cleaningProducts"
+                                   :value="1"
+                                   @@click="changeAddsItem('cleaningProducts', 1)"
+                                   v-model="adds.cleaningProducts.amount" /><span>Yes</span>
+                        </label>
+                    </div>
+                    <p class="booking-step__choose-name booking-step__choose-name--strong wow fadeIn" data-wow-delay="1s">
+                        <img src="/static/images/ecover_svg.svg" class="ecover_img ecover_mob" alt="ecover" loading="lazy"/>
+                        Do you need Eco-friendly cleaning products? <span>( Additional @currency{{ adds.cleaningProducts.pricePerAdd }} )</span>
+                    </p>
+                    <img src="/static/images/ecover_svg_mob.svg" class="ecover_img ecover_desk" alt="ecover" loading="lazy"/>
+                    <div class="info-hidden">
+                        <img src="/static/images/info-icon.svg" alt="info" loading="lazy"/>
+                        <div class="info-hidden__text">
+                            <p>Cleaning products include sprays and cloths.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-step__choose-item booking-step__choose-item__with__eco" v-if="!adds.endOfTenancy?.amount">
+                    <div class="booking-step__radios">
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="hooverMop"
+                                   :value="0"
+                                   @@click="changeAddsItem('hooverMop', 0)"
+                                   v-model="adds.hooverMop.amount" /><span>No</span>
+                        </label>
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="hooverMop"
+                                   :value="1"
+                                   @@click="changeAddsItem('hooverMop', 1)"
+                                   v-model="adds.hooverMop.amount" /><span>Yes</span>
+                        </label>
+                    </div>
+                    <p class="booking-step__choose-name booking-step__choose-name--strong wow fadeIn" data-wow-delay="1s">
+                        Do you need a Hoover and a Mop? <span>(Additional @currency{{ adds.hooverMop.pricePerAdd }})</span>
+                    </p>
+                </div>
+                <p class="booking-step__choose-desc">
+                    <img src="/static/images/desk-alert-triangle.svg" class="icon" alt="ecover" loading="lazy"/>
+                    <span>
+                        We strongly recommend that all cleanings include a disinfection service which will give you
+                        extra protection for you and your loved ones.
+                    </span>
+                    <span class="desc-line"></span>
+                </p>
+                <div class="booking-step__choose-item booking-step__choose-item_green booking-step__choose-item--long">
+                    <div class="booking-step__radios">
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="sanitise"
+                                   :value="0"
+                                   @@click="changeAddsItem('sanitise', 0)"
+                                   v-model="adds.sanitise.amount" /><span>No</span>
+                        </label>
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="sanitise"
+                                   :value="1"
+                                   @@click="changeAddsItem('sanitise', 1)"
+                                   v-model="adds.sanitise.amount" /><span>Yes</span>
+                        </label>
+                    </div>
+                    <p class="booking-step__choose-name booking-step__choose-name--strong wow fadeIn" data-wow-delay="1s">
+                        Do you need us to disinfect your home? <span>( Additional @currency{{ adds.sanitise.pricePerAdd }} )</span>
+                    </p>
+                </div>
+                <div class="booking-step__choose-item booking-step__choose-item_errands">
+                    <p class="booking-step__choose-name wow fadeIn">Do you need help with any Errands/Chores?</p>
+                    <div class="info-hidden">
+                        <img src="/static/images/info-icon.svg" alt="info" loading="lazy"/>
+                        <p class="info-hidden__text">
+                            Errands/chores can be anything from delivering or collecting something on your behalf. This can include shopping
+                            or going to the pharmacy, from keeping you company, to organising things, watering plants, feeding pets, house
+                            sitting, you name it, we can likely do it
+                        </p>
+                    </div>
+                    <div class="time-counter">
+                        <button class="minus-btn" type="button" @@click="changeAddsItem('chores', -1)"></button>
+                        <span class="time-counter__text js-time-text" v-text="getHMvalue(adds.chores.amount, adds.chores.timePerAdd)">0h</span>
+                        <button class="plus-btn" type="button" @@click="changeAddsItem('chores', 1)"></button>
+                    </div>
+                </div>
+
+                <div class="booking-step__choose-item">
+                    <div class="booking-step__radios">
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="checkTheJob"
+                                   :value="0"
+                                   @@click="changeAddsItem('checkTheJob', 0)"
+                                   v-model="adds.checkTheJob.amount" /><span>No</span>
+                        </label>
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="checkTheJob"
+                                   :value="1"
+                                   @@click="changeAddsItem('checkTheJob', 1)"
+                                   v-model="adds.checkTheJob.amount" /><span>Yes</span>
+                        </label>
+                    </div>
+                    <p class="booking-step__choose-name wow fadeIn">Can you check the job at the end?</p>
+                </div>
+                <div class="booking-step__choose-item">
+                    <div class="booking-step__radios">
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="pets"
+                                   :value="0"
+                                   @@click="changeAddsItem('pets', 0)"
+                                   v-model="adds.pets.amount" /><span>No</span>
+                        </label>
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="pets"
+                                   :value="1"
+                                   @@click="changeAddsItem('pets', 1)"
+                                   v-model="adds.pets.amount" /><span>Yes</span>
+                        </label>
+                    </div>
+                    <p class="booking-step__choose-name wow fadeIn">Do you have pets?</p>
+                </div>
+                <div class="booking-step__choose-item booking-step__choose-item--wrap">
+                    <div class="booking-step__radios">
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="pickUpKey"
+                                   :value="0"
+                                   @@click="changeAddsItem('pickUpKey', 0)"
+                                   v-model="adds.pickUpKey.amount" /><span>No</span>
+                        </label>
+                        <label class="wow fadeIn">
+                            <input type="radio"
+                                   name="pickUpKey"
+                                   :value="1"
+                                   @@click="changeAddsItem('pickUpKey', 1)"
+                                   v-model="adds.pickUpKey.amount" /><span>Yes</span>
+                        </label>
+                    </div>
+                    <p class="booking-step__choose-name wow fadeIn">Does a cleaner need to pick up a key?</p>
+                    <div class="booking-step__choose-msg wow fadeIn"
+                         v-bind:class="{'booking-step__choose-msg--active': adds.pickUpKey.amount == 1}">
+                        <div class="booking-step__choose-msg-block">
+                            <textarea class="booking-step__choose-textarea"
+                                      name="wherekeys"
+                                      placeholder="Let us know where keys are stored"
+                                      v-model.lazy="keyComment"></textarea>
+                            <div class="counter">
+                                <p class="currentLength">0</p>
+                                <p>/</p>
+                                <p class="maxlenght">500</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="booking-step__block booking-step__block--last wow fadeIn" v-bind:class="{'hide-dirt-level': isSubscription}">
+        <div class="booking-step__number">
+            <span>{{ studio ? '2' : '3' }}</span>
+        </div>
+        <div class="booking-step__header">
+            <p class="booking-step__name booking-step__name--md">Let us know the level of dirt at your property</p>
+        </div>
+        <div class="booking-step__content">
+            <div class="booking-step__level">
+                <div class="booking-step__level-item">
+                    <input type="radio" name="level" :value="1" id="light" v-model="adds.dirtLevel.amount" @@click="changeAddsItem('dirtLevel', 0, 1)" />
+                    <label for="light" v-bind:class="{ light: adds.dirtLevel.amount == 1 }"><span>Light</span></label>
+                </div>
+                <div class="booking-step__level-item">
+                    <input type="radio" name="level" :value="2" id="medium" v-model="adds.dirtLevel.amount" @@click="changeAddsItem('dirtLevel', 0, 2)" />
+                    <label for="medium" v-bind:class="{ medium: adds.dirtLevel.amount == 2 }"><span>Medium</span></label>
+                </div>
+                <div class="booking-step__level-item">
+                    <input type="radio" name="level" :value="3" id="heavy" v-model="adds.dirtLevel.amount" @@click="changeAddsItem('dirtLevel', 0, 3)" />
+                    <label for="heavy" v-bind:class="{ heavy: adds.dirtLevel.amount == 3 }"><span>Heavy</span></label>
+                </div>
+            </div>
+            <div class="booking-step__level-info">
+                <div class="booking-step__level-info--light" data-level-info="light">
+                    <ul>
+                        <li>
+                            <p>You do cleaning on a regular basis, from two times a month</p>
+                        </li>
+                        <li>
+                            <p>Your home is fairly clean, it just needs some refreshing</p>
+                        </li>
+                    </ul>
+                </div>
+                <div data-level-info="medium" class="booking-step__level-info--medium">
+                    <ul>
+                        <li>
+                            <p>You haven’t done cleaning for almost or over a month</p>
+                        </li>
+                        <li>
+                            <p>You have children</p>
+                        </li>
+                        <li>
+                            <p>You have pets</p>
+                        </li>
+                        <li>
+                            <p>You had a party</p>
+                        </li>
+                    </ul>
+                </div>
+                <div data-level-info="heavy" class="booking-step__level-info--heavy">
+                    <ul v-show="endOfTenancy == 'yes'">
+                        <li>
+                            <p>This is Default dirt level for End of tenancy cleaning</p>
+                        </li>
+                        <li>
+                            <p>Your property requires a deep clean</p>
+                        </li>
+                        <li>
+                            <p>Higher level of attention to detail</p>
+                        </li>
+                        <li>
+                            <p>Focus on quality</p>
+                        </li>
+                    </ul>
+                    <ul v-show="endOfTenancy == 'no' || endOfTenancy == false">
+                        <li>
+                            <p>You haven’t done cleaning for over a month or even two</p>
+                        </li>
+                        <li>
+                            <p>You have a lot of stuff that need to be moved /rearranged to clean your home</p>
+                        </li>
+                        <li>
+                            <p>You had a party and there are a lot of things to be cleaned and arranged</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Html.Partial("_Step2CarpetUpholstery", new ViewDataDictionary { { "currency", currency } })
+
+    <div class="booking-step-buttons">
+        <button class="booking-step-button booking-step-button--grey js-goTo-step1 wow fadeIn" type="button" v-on:click="showQuestions">
+            <span class="booking-step-button__text">back</span>
+        </button>
+        <button class="booking-step-button wow fadeIn" type="button" v-on:click="toStep3">
+            <span class="booking-step-button__text">next</span>
+        </button>
+    </div>
+</div>
